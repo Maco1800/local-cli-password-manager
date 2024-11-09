@@ -22,7 +22,6 @@ def show_menu(name,uid,cursor,connection):
     print("Welcome ",name)
     y='y'
     while y in "yY":
-        print("""""")
         choice = int(input("""CLI PASSWORD MANAGER
                             1\tview saved entry
                             2\tadd new entry
