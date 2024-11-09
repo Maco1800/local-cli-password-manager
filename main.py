@@ -1,8 +1,7 @@
-import mysql.connector, bcrypt
-import getpass, pyperclip
-import random, string
+import mysql.connector
+import bcrypt, getpass, pyperclip
+import random, string, tabulate
 from time import sleep
-import tabulate
 
 def hash_password(password):
     salt = bcrypt.gensalt()
