@@ -22,7 +22,17 @@ def show_menu(name,uid,cursor,connection):
     print("Welcome ",name)
     y='y'
     while y in "yY":
-        choice = int(input("CLI PASSWORD MANAGER\n1\tview saved entry\n2\tadd new entry\n3\tedit saved entry\n4\tdelete saved entry\n5\trandom password generater\n6\tedit account details\n7\tdelete account\n0\texit\nchoose one option : "))
+        print("""""")
+        choice = int(input("""CLI PASSWORD MANAGER
+                            1\tview saved entry
+                            2\tadd new entry
+                            3\tedit saved entry
+                            4\tdelete saved entry
+                            5\trandom password generater
+                            6\tedit account details
+                            7\tdelete account
+                            0\texit
+                            choose one option : """))
         match choice:
             case 0:
                 print("bie!")
