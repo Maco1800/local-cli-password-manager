@@ -1,7 +1,3 @@
-"""
-SQL Injection: Using parameterized queries instead of format() for better security.
-"""
-
 import mysql.connector, bcrypt
 import getpass, pyperclip
 import random, string
@@ -33,8 +29,8 @@ def show_menu(name,uid,cursor,connection):
                 print("bie!")
                 y='n'
             case 1:
-                query="SELECT website,login,password FROM passwords WHERE userid = {}".format(uid)
-                cursor.execute(query)
+                query="SELECT website,login,password FROM passwords WHERE userid = %s"
+                cursor.execute(query,(uid))
                 data=cursor.fetchall()
                 if cursor.rowcount==0:
                     print("no saved passwords found\n")
@@ -65,15 +61,15 @@ def show_menu(name,uid,cursor,connection):
                     print('password copied to clipboard')
                 else:
                     password=input("enter password : ")
-                query="INSERT INTO passwords (userid, website, login, password) VALUES ({},'{}','{}','{}')".format(uid, website, login, password)
-                cursor.execute(query)
+                query="INSERT INTO passwords (userid, website, login, password) VALUES (%s, %s, %s, %s)"
+                cursor.execute(query,(uid, website, login, password))
                 connection.commit()
                 print("entry added successfully\n")
                 sleep(3)
             case 3:
                 print("EDIT SAVED PASSWORDS")
-                query="SELECT uid,website,login,password FROM passwords WHERE userid = {}".format(uid)
-                cursor.execute(query)
+                query="SELECT uid,website,login,password FROM passwords WHERE userid = %s"
+                cursor.execute(query,(uid))
                 data=cursor.fetchall()
                 if cursor.rowcount==0:
                     print("no saved passwords found\n")
@@ -90,14 +86,14 @@ def show_menu(name,uid,cursor,connection):
                         match cid:
                             case 1:
                                 website = input("enter new website : ")
-                                query="UPDATE passwords SET website = '{}' WHERE uid = {}".format(website, pid)
-                                cursor.execute(query)
+                                query="UPDATE passwords SET website = %s WHERE uid = %s"
+                                cursor.execute(query,(website, pid))
                                 connection.commit()
                                 print("website changed successfully\n")
                             case 2:
                                 login = input("enter new login : ")
-                                query="UPDATE passwords SET login = '{}' WHERE uid = {}".format(login, pid)
-                                cursor.execute(query)
+                                query="UPDATE passwords SET login = %s WHERE uid = %s"
+                                cursor.execute(query,(login, pid))
                                 connection.commit()
                                 print("login changed successfully\n")
                             case 3:
@@ -108,8 +104,8 @@ def show_menu(name,uid,cursor,connection):
                                     print('password copied to clipboard')
                                 else:
                                     password=input("enter password : ")
-                                query="UPDATE passwords SET password = '{}' WHERE uid = {}".format(password, pid)
-                                cursor.execute(query)
+                                query="UPDATE passwords SET password = %s WHERE uid = %s"
+                                cursor.execute(query,(password, pid))
                                 connection.commit()
                                 print("password changed successfully\n")
                             case _:
@@ -125,8 +121,8 @@ def show_menu(name,uid,cursor,connection):
                 sleep(2)
             case 5:
                 print("DELETE SAVED ENTRY")
-                query="SELECT uid,website,login FROM passwords WHERE userid = {}".format(uid)
-                cursor.execute(query)
+                query="SELECT uid,website,login FROM passwords WHERE userid = %s"
+                cursor.execute(query,(uid))
                 data=cursor.fetchall()
                 if cursor.rowcount==0:
                     print("no saved passwords found")
@@ -144,8 +140,8 @@ def show_menu(name,uid,cursor,connection):
                         y='y'
                     else:
                         if pid in L:
-                            query="DELETE FROM passwords WHERE uid = {}".format(pid)
-                            cursor.execute(query)
+                            query="DELETE FROM passwords WHERE uid = %s"
+                            cursor.execute(query,(pid))
                             connection.commit()
                             print("password deleted successfully!\n")
                         else:
@@ -153,8 +149,8 @@ def show_menu(name,uid,cursor,connection):
                 sleep(3)
             case 6:
                 print("EDIT ACCOUNT DETAILS")
-                query = "SELECT email,name,master_password FROM users WHERE uid = {}".format(uid)
-                cursor.execute(query)
+                query = "SELECT email,name,master_password FROM users WHERE uid = %s"
+                cursor.execute(query,(pid))
                 result = cursor.fetchone()
                 cp=input("enter current password : ")
                 if verify_password(result[2], cp):
@@ -164,20 +160,20 @@ def show_menu(name,uid,cursor,connection):
                     match cid:
                         case 1:
                             newemail=input("enter new email : ")
-                            query = "SELECT COUNT(*) FROM users WHERE email = '{}' AND uid != {}".format(newemail.lower(), uid)
-                            cursor.execute(query)
+                            query = "SELECT COUNT(*) FROM users WHERE email = %s AND uid != %s"
+                            cursor.execute(query,(newemail.lower(), uid))
                             email_count = cursor.fetchone()[0]
                             if email_count > 0:
                                 print("user already exists with the email address\n")
                             else:
-                                query="UPDATE users SET email = '{}' WHERE uid = {}".format(newemail.lower(), uid)
-                                cursor.execute(query)
+                                query="UPDATE users SET email = %s WHERE uid = %s"
+                                cursor.execute(query,(newemail.lower(), uid))
                                 connection.commit()
                                 print("email changed successfully\n")
                         case 2:
                             newname=input("enter new name : ")
-                            query="UPDATE users SET name = '{}' WHERE uid = {}".format(newname, uid)
-                            cursor.execute(query)
+                            query="UPDATE users SET name = %s WHERE uid = %s"
+                            cursor.execute(query,(newname, uid))
                             connection.commit()
                             print("name changed successfully\n")
                         case 3:
@@ -185,8 +181,8 @@ def show_menu(name,uid,cursor,connection):
                             np=input("enter new password : ")
                             np2=input("re-enter password : ")
                             if np == np2:
-                                query="UPDATE users SET master_password = '{}'".format(hash_password(np).decode('utf-8'))
-                                cursor.execute(query)
+                                query="UPDATE users SET master_password = %s"
+                                cursor.execute(query,(hash_password(np).decode('utf-8')))
                                 connection.commit()
                                 print("Password changed successfully\n")
                             else:
@@ -198,21 +194,21 @@ def show_menu(name,uid,cursor,connection):
                 sleep(3)
             case 7:
                 print("DELETE ACCOUNT")
-                query = "SELECT master_password FROM users WHERE uid = {}".format(uid)
-                cursor.execute(query)
+                query = "SELECT master_password FROM users WHERE uid = %s"
+                cursor.execute(query,(uid))
                 result = cursor.fetchone()
                 print("!! WARNING THIS CANNOT BE UNDONE !!")
                 cp=input("enter current password : ")
                 if verify_password(result[0], cp):
                     confirm=input("type 'yes' to confirm : ")
                     if confirm.lower() == 'yes':
-                        query="SELECT COUNT(*) FROM passwords WHERE userid = {}".format(uid)
-                        cursor.execute(query)
+                        query="SELECT COUNT(*) FROM passwords WHERE userid = %s"
+                        cursor.execute(query,(uid))
                         if cursor.fetchone()[0] > 0:
-                            query="DELETE FROM passwords WHERE userid = {}".format(uid)
-                            cursor.execute(query)
-                        query="DELETE FROM users WHERE uid={}".format(uid)
-                        cursor.execute(query)
+                            query="DELETE FROM passwords WHERE userid = %s"
+                            cursor.execute(query,(uid))
+                        query="DELETE FROM users WHERE uid=%s"
+                        cursor.execute(query,(uid))
                         connection.commit()
                         print("account deleted")
                         break
@@ -232,8 +228,8 @@ def main():
         connection.commit()
         print("Welcome to password manager")
         email = input("enter login email : ")
-        query = "SELECT master_password,name,uid FROM users WHERE email = '{}'".format(email.lower())
-        cursor.execute(query)
+        query = "SELECT master_password,name,uid FROM users WHERE email = %s"
+        cursor.execute(query,(email.lower()))
         result = cursor.fetchone()
         if cursor.rowcount == 0:
             print("email does not exist. Would you like to create a new account?")
@@ -245,8 +241,8 @@ def main():
                 master_password2=input("re-enter password : ")
                 if master_password == master_password2:
                     hashed_password = hash_password(master_password)
-                    insert_query = "INSERT INTO users (name, email, master_password) VALUES ('{}', '{}', '{}')".format(name, email.lower(), hashed_password.decode('utf-8'))
-                    cursor.execute(insert_query)
+                    query = "INSERT INTO users (name, email, master_password) VALUES (%s, %s, %s)"
+                    cursor.execute(query,(name, email.lower(), hashed_password.decode('utf-8')))
                     connection.commit()
                     print("account created successfully!")
                 else:
