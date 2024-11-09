@@ -127,9 +127,7 @@ def show_menu(name,uid,cursor,connection):
                     print("no saved passwords found")
                 else:
                     L=[]
-                    #tab=[]
                     for i in range(cursor.rowcount):
-                        #tab.append([data[i][0],data[i][1],data[i][2]])
                         L.append(data[i][0])
                     print(tabulate.tabulate(data, headers=["UID","WEBSITE", "LOGIN"]))
                     pid=int(input("choose one option : "))
