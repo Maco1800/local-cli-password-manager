@@ -22,7 +22,7 @@ def show_menu(name,uid,cursor,connection):
     print("Welcome ",name)
     y='y'
     while y in "yY":
-        choice = int(input("CLI PASSWORD MANAGER\n1\tview saved entry\n2\tadd new entry\n3\tedit saved entry\n4\tdelete saved entry\n5\trandom password generater\n6\tedit account deatils\n7\tdelete account\n0\texit\nchoose one option : "))
+        choice = int(input("CLI PASSWORD MANAGER\n1\tview saved entry\n2\tadd new entry\n3\tedit saved entry\n4\tdelete saved entry\n5\trandom password generater\n6\tedit account details\n7\tdelete account\n0\texit\nchoose one option : "))
         match choice:
             case 0:
                 print("bie!")
@@ -46,7 +46,7 @@ def show_menu(name,uid,cursor,connection):
                     x=input("do you need to view your password (y/n) : ")
                     if x.lower()=='y':
                         print("password \t",data[pid][2],"\n")
-                        sleep(5)
+                        sleep(3)
                     else:
                         y='y'
             case 2:
@@ -60,7 +60,7 @@ def show_menu(name,uid,cursor,connection):
                     print('password copied to clipboard')
                 else:
                     password=getpass.getpass("enter password : ")
-                if password>=6:
+                if len(password)>=6:
                     query="INSERT INTO passwords (userid, website, login, password) VALUES (%s, %s, %s, %s)"
                     cursor.execute(query,(uid, website, login, password))
                     connection.commit()
@@ -106,7 +106,7 @@ def show_menu(name,uid,cursor,connection):
                                     print('password copied to clipboard')
                                 else:
                                     password=getpass.getpass("enter password : ")
-                                if password>=6:
+                                if len(password)>=6:
                                     query="UPDATE passwords SET password = %s WHERE uid = %s"
                                     cursor.execute(query,(password, pid))
                                     connection.commit()
@@ -155,7 +155,7 @@ def show_menu(name,uid,cursor,connection):
             case 6:
                 print("EDIT ACCOUNT DETAILS")
                 query = "SELECT email,name,master_password FROM users WHERE uid = %s"
-                cursor.execute(query,(pid,))
+                cursor.execute(query,(uid,))
                 result = cursor.fetchone()
                 cp=getpass.getpass("enter current password : ")
                 if verify_password(result[2], cp):
@@ -186,7 +186,7 @@ def show_menu(name,uid,cursor,connection):
                             np=getpass.getpass("enter new password (min len = 6) : ")
                             np2=getpass.getpass("re-enter password : ")
                             if np == np2:
-                                if np >=6:
+                                if len(np) >=6:
                                     query="UPDATE users SET master_password = %s"
                                     cursor.execute(query,(hash_password(np).decode('utf-8'),))
                                     connection.commit()
@@ -248,14 +248,14 @@ def main():
                 master_password = getpass.getpass("enter your master password (min len = 6): ")
                 master_password2=getpass.getpass("re-enter password : ")
                 if master_password == master_password2:
-                    if master_password>=6:
+                    if len(master_password)>=6:
                         hashed_password = hash_password(master_password)
                         query = "INSERT INTO users (name, email, master_password) VALUES (%s, %s, %s)"
                         cursor.execute(query,(name, email.lower(), hashed_password.decode('utf-8')))
                         connection.commit()
                         print("account created successfully!")
                         print("sending you to login page...\n")
-                        sleep(5)
+                        sleep(3)
                         main()
                     else:
                         print("password must be at least 6 characters")
@@ -278,6 +278,6 @@ try:
 except Exception as e:
     print("error occured :",e)
     print("restarting program completely...\n")
-    sleep(5)
+    sleep(3)
     main()
     
